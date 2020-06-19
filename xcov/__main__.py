@@ -142,7 +142,7 @@ class Options(object):
 def main(args=None):
     parser = create_argument_parser()
     cli_options = parser.parse_args(args=args)
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
+
     # load the config
     cfg_name = find_config_name(cli_options)
     cfg_options = {}
@@ -236,7 +236,7 @@ def main(args=None):
             "\tThis option cannot be an empty string.")
         sys.exit(1)
     options.root_dir = os.path.abspath(options.root)
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
+
     #
     # Setup filters
     #
@@ -271,8 +271,8 @@ def main(args=None):
     ]:
         logger.verbose_msg('Filters for {}: ({})', name, len(filters))
         for f in filters:
-            logger.verbose_msg('- {}', f) 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
+            logger.verbose_msg('- {}', f)
+
     if options.exclude_lines_by_pattern:
         try:
             re.compile(options.exclude_lines_by_pattern)
@@ -282,25 +282,21 @@ def main(args=None):
                 "Invalid regular expression: {}, error: {}",
                 repr(options.exclude_lines_by_pattern), e)
             sys.exit(1)
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
+
     covdata = dict()
-    print(covdata, options.add_tracefile,options, logger)
     if options.add_tracefile:
         collect_coverage_from_tracefiles(covdata, options, logger)
     else:
         collect_coverage_from_gcov(covdata, options, logger)
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
     logger.verbose_msg("Gathered coveraged data for {} files", len(covdata))
 
     # Print reports
     print_reports(covdata, options, logger)
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
     if options.fail_under_line > 0.0 or options.fail_under_branch > 0.0:
         fail_under(covdata, options.fail_under_line, options.fail_under_branch)
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
 
 def collect_coverage_from_tracefiles(covdata, options, logger):
     datafiles = set()
@@ -323,7 +319,6 @@ def collect_coverage_from_tracefiles(covdata, options, logger):
 def collect_coverage_from_gcov(covdata, options, logger):
     datafiles = set()
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
     find_files = find_datafiles
     process_file = process_datafile
     if options.gcov_files:
@@ -351,7 +346,6 @@ def collect_coverage_from_gcov(covdata, options, logger):
             pool.add(process_file, file_)
         contexts = pool.wait()
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
     toerase = set()
     for context in contexts:
         for fname, cov in context['covdata'].items():
@@ -365,12 +359,10 @@ def collect_coverage_from_gcov(covdata, options, logger):
         if os.path.exists(filepath):
             os.remove(filepath)
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
 
 def print_reports(covdata, options, logger):
     generators = []
 
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
     if options.xml or options.prettyxml:
         generators.append((
             [options.xml],
@@ -410,9 +402,7 @@ def print_reports(covdata, options, logger):
             lambda: logger.warn(
                 "CSV output skipped - "
                 "consider providing output file with `--csv=OUTPUT`.")))
-    print(generators)
-    #sys.exit(1)
-    print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
+
     reports_were_written = False
     default_output = OutputOrDefault(options.output)
     for output_choices, generator, on_no_output in generators:
@@ -420,8 +410,6 @@ def print_reports(covdata, options, logger):
         if output is default_output:
             default_output = None
         if output is not None:
-            print('[%s %s:%d]: %s'%(time.strftime('%H:%M:%S', time.localtime(time.time())),sys._getframe().f_code.co_filename, sys._getframe().f_lineno,sys._getframe().f_code.co_name))
-            #print(covdata, output.value, options)
             generator(covdata, output.value, options)
             reports_were_written = True
         else:
